@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/grey"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="2">
+
+    <TextView
+        android:id="@+id/toolbarText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="10dp"
+        android:layout_weight="2"
+        android:gravity="center_vertical"
+        android:text="@string/sololearn"
+        android:textColor="#fff"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:id="@+id/verticalImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_vertical" />
+
+    <ImageView
+        android:id="@+id/staggeredImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_staggered" />
+</LinearLayout>

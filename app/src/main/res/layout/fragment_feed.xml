@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:dividerPadding="4dp"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <TextView
+        android:id="@+id/noPinedItemsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="There are not pined items"
+        android:textSize="22sp"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_pinned_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:padding="8dp"
+        tools:itemCount="10"
+        tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:listitem="@layout/rv_item_pin"
+        tools:orientation="horizontal" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D8D8D8" />
+
+    <TextView
+        android:id="@+id/noOfflineItemsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="There are not offline items"
+        android:textSize="22sp"
+        android:visibility="gone" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_feed_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            tools:itemCount="15"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/list_item_feed_grid"
+            tools:orientation="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+</LinearLayout>
