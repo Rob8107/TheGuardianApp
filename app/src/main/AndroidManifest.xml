@@ -16,11 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".DetailsActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".SplashScreen"
             android:configChanges="keyboardHidden|orientation"

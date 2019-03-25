@@ -53,7 +53,7 @@ public class FeedRecyclerViewAdapter extends PagedListAdapter<FeedItem, FeedRecy
     }
 
     public interface OnItemClickListener {
-        void onFeedListItemClick(FeedItem item);
+        void onFeedListItemClick(FeedViewHolder feedViewHolder, FeedItem item);
     }
 
     public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -78,7 +78,7 @@ public class FeedRecyclerViewAdapter extends PagedListAdapter<FeedItem, FeedRecy
 
             FeedItem item = getItem(getAdapterPosition());
             if (mFeedListItemClickListener != null) {
-                mFeedListItemClickListener.onFeedListItemClick(item);
+                mFeedListItemClickListener.onFeedListItemClick(this, item);
             }
         }
     }

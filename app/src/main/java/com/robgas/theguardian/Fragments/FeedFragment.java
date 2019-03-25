@@ -5,15 +5,16 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +24,13 @@ import android.widget.TextView;
 import com.robgas.theguardian.Adapters.FeedRecyclerViewAdapter;
 import com.robgas.theguardian.Adapters.PinRecyclerViewAdapter;
 import com.robgas.theguardian.Database.Entity.PinEntity;
+import com.robgas.theguardian.DetailsActivity;
 import com.robgas.theguardian.MainActivity;
 import com.robgas.theguardian.Models.FeedItem;
 import com.robgas.theguardian.Network.FeedDataSourceFactory;
 import com.robgas.theguardian.Network.RoomDataSourceFactory;
 import com.robgas.theguardian.R;
 import com.robgas.theguardian.SoloLearnApplication;
-import com.robgas.theguardian.Utils.DetailsTransition;
 import com.robgas.theguardian.Utils.SoloUtils;
 
 import java.util.List;
@@ -40,14 +41,13 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
 
     private FeedRecyclerViewAdapter mFeedAdapter;
     private PinRecyclerViewAdapter mPinAdapter;
-    private Handler handler;
     private FeedDataSourceFactory feedDataFactory;
     private TextView toolbarText;
-    private int delayMillis = 30000;
     private Executor executor = Executors.newFixedThreadPool(5);
     private LiveData<PagedList<FeedItem>> newsFeedObservable;
     private TextView noOfflineItemsTextView;
     private RecyclerView mFeedRecyclerView;
+    private CountDownTimer countDownTimer;
 
     public static FeedFragment newInstance() {
         FeedFragment fragment = new FeedFragment();
@@ -89,7 +89,7 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
 
         if (getArguments() != null && getArguments().getParcelable(MainActivity.FeedItemId) != null) {
             // Fragment opened from notification
-            onFeedListItemClick(getArguments().getParcelable(MainActivity.FeedItemId));
+            onFeedListItemClick(null, getArguments().getParcelable(MainActivity.FeedItemId));
         }
         //region Pin
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
@@ -98,7 +98,6 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
         mPinRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         toolbarText = view.findViewById(R.id.toolbarText);
-        handler = new Handler();
 
         SoloLearnApplication.getApplicationInstance().appDb.feedDao().getFeedList().observe(this, feedEntities -> {
             if (feedEntities != null) {
@@ -154,12 +153,16 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
     }
 
     public void scheduleGetFeed() {
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                feedDataFactory.invalidate();
-                handler.postDelayed(this, delayMillis);
+        int delayMillis = 30000;
+        countDownTimer = new CountDownTimer(delayMillis, 1000) {
+            public void onTick(long millisUntilFinished) {
             }
-        }, delayMillis);
+
+            public void onFinish() {
+                feedDataFactory.invalidate();
+                countDownTimer.start();
+            }
+        };
     }
 
     @Override
@@ -175,22 +178,18 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
     }
 
     @Override
-    public void onFeedListItemClick(FeedItem item) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(DetailsFragment.EXTRA_FEED_ITEM, item);
+    public void onFeedListItemClick(@Nullable FeedRecyclerViewAdapter.FeedViewHolder feedViewHolder, FeedItem item) {
         if (getActivity() != null) {
-            DetailsFragment fragment = DetailsFragment.newInstance(bundle);
-            fragment.setSharedElementEnterTransition(new DetailsTransition());
-            fragment.setEnterTransition(new Fade());
-            setExitTransition(new Fade());
-            fragment.setSharedElementReturnTransition(new DetailsTransition());
-
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-//                    .addSharedElement(holder.image, "1111")
-                    .commit();
+            if (feedViewHolder != null) {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra(DetailsActivity.EXTRA_FEED_ITEM, item);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(getActivity(), feedViewHolder.image, "profile");
+                startActivity(intent, options.toBundle());
+            } else {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                startActivity(intent);
+            }
 
         }
 
@@ -198,14 +197,17 @@ public class FeedFragment extends BaseFragment implements PinRecyclerViewAdapter
 
     @Override
     public void onPinListItemClick(PinRecyclerViewAdapter.PinViewHolder holder, FeedItem item) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(DetailsFragment.EXTRA_FEED_ITEM, item);
         if (getActivity() != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, DetailsFragment.newInstance(bundle))
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss();
+            if (holder != null) {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra(DetailsActivity.EXTRA_FEED_ITEM, item);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(getActivity(), holder.image, "profile");
+                startActivity(intent, options.toBundle());
+            } else {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                startActivity(intent);
+            }
         }
     }
 

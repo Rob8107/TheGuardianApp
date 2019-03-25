@@ -31,6 +31,10 @@ public abstract class BaseFragment extends Fragment {
                     @Override
                     public void onLost(Network network) {
                         super.onLost(network);
+                        if (isNetworkConnected()) {
+                            onNetworkStateChanged(true);
+                            return;
+                        }
                         onNetworkStateChanged(false);
                     }
                 });
